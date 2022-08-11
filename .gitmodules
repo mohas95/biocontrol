@@ -1,0 +1,3 @@
+[submodule "DFR_BME680"]
+	path = DFR_BME680
+	url = git@github.com:DFRobot/DFRobot_BME680.git
