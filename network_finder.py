@@ -1,6 +1,11 @@
-from wifi import Cell, Scheme
+import subprocess
 
-print(list(Cell.all('wlan0')))
+# using the check_output() for having the network term retrieval
+devices = subprocess.check_output(['netsh','wlan','show','network'])
 
-schemes = list(Scheme.all())
-print (schemes)
+# decode it to strings
+devices = devices.decode('ascii')
+devices= devices.replace("\r","")
+
+# displaying the information
+print(devices)
