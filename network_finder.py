@@ -1,3 +1,3 @@
 from wifi import Cell, Scheme
 
-print(Cell.all('wlan0'))
+print(list(Cell.all('wlan0')))
