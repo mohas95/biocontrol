@@ -6,8 +6,6 @@ import time
 import os
 import os.path
 import RPi.GPIO as GPIO
-import logzero
-# from logzero import setup_logger
 import sys
 
 ########################################################### Wrapper/decorator & Helper functions
