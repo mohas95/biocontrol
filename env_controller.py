@@ -117,7 +117,7 @@ class Biocontroller():
 if __name__ == '__main__':
     control_box= Biocontroller()
     print(control_box.sun_info)
-    print(control_box.timezone)
+    print(type(control_box.timezone))
 
 
 
