@@ -14,6 +14,7 @@
 ### python library
 - pip install smbus
 - pip install pip install RPI-control-center
+- pip install astral
 
 ### UI(Node-red)
 - sudo apt install build-essential git curl
