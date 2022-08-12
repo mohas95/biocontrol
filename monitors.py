@@ -229,9 +229,9 @@ class BME680():
 	@threaded
 	def start(self):
 		self.status = True
+		print(f'Starting {self.label} process')
 		data = {'label':self.label}
 		self.begin()
-		print(f'Starting {self.label} process')
 
 		while self.status:
 			data['sensor_data'] = self.get_sensor_readings()

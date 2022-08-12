@@ -96,11 +96,10 @@ class Biocontroller():
 				}
 
 		for relay_id, relay in self.relay_socket.relay_dict.items():
-			data['sockets'] = { relay_id : {'name':relay.name,
-											'pin':relay.pin,
-											'state': 'ON' if relay.state else 'OFF'
-											}
-								}
+			data['sockets'][relay_id] = { 'name':relay.name,
+										  'pin':relay.pin,
+										  'state': 'ON' if relay.state else 'OFF'
+										  }
 		self.readings = data
 
 		return self.readings
