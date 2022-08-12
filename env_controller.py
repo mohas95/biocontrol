@@ -134,6 +134,7 @@ class Biocontroller():
 
 	def begin(self):
 		""" """
+		print('Starting all Processes')
 		self.relay_socket = GPIO_engine.BulkUpdater(
 												config_file = './relay_config.json',
 												api_dir = './api',
@@ -144,6 +145,10 @@ class Biocontroller():
 
 		self.env_sensor = BME680()
 		self.env_sensor.start()
+
+		time.sleep(15)
+		print('All processes started')
+
 
 	@set_thread
 	@threaded
