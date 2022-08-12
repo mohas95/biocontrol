@@ -106,8 +106,9 @@ class Biocontroller():
 
 
 
-
-
+if __name__ == '__main__':
+    control_box= Biocontroller()
+    print(control_box.sun_info)
 
 
 
@@ -115,14 +116,14 @@ class Biocontroller():
 
 
 ######### You can put any code because this function is non-blocking
-try:
-    while True:
-        data = env_sensor.sensor_readings
-
-
-        if data['Temperature,C']
-
-        time.sleep(1)
-except:
-    control_box.stop()
-    control_box.stop()
+# try:
+#     while True:
+#         data = env_sensor.sensor_readings
+#
+#
+#         if data['Temperature,C']
+#
+#         time.sleep(1)
+# except:
+#     control_box.stop()
+#     control_box.stop()
