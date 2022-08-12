@@ -150,7 +150,7 @@ class Biocontroller():
 				pass
 
 		else:
-			turnoff
+			self.relay_socket_off()
 
 
 	def load_params(self, config_file):
