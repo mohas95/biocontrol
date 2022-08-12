@@ -92,7 +92,7 @@ class Biocontroller():
 				self.env_sensor.label : {'status':'active' if self.env_sensor.status else 'inactive',
 										 'sensor_data': self.env_sensor.sensor_readings
 										 },
-				'sockets' : 'status': 'active' if self.relay_socket.status else 'inactive'
+				'sockets' : {'status': 'active' if self.relay_socket.status else 'inactive'}
 				}
 
 		for relay_id, relay in self.relay_socket.relay_dict.items():
