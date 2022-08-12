@@ -158,19 +158,21 @@ class Biocontroller():
 			push_to_api(self.readings_api,data)
 			time.sleep(self.refresh_rate)
 
-		print(f'Stopinf {self.label} process')
-		self.relay_socket.stop()
-		self.env_sensor.stop()
-		time.sleep(10)
+		print(f'Stoping {self.label} process')
+		self.stop_processes()
 		data = self.get_readings()
-		push_to_api(self.readings_api,data)
+		push_to_api(self.readings_api, data)
 		print(f'Stopped {self.label} process')
 
 	def stop(self):
 		print(f'attempting to stop {self.label} process')
 		self.status = None
 
-
+	def stop_processes(self):
+		print('Stopping all processes')
+		self.relay_socket.stop()
+		self.env_sensor.stop()
+		time.sleep(15)
 
 
 if __name__ == '__main__':
@@ -181,22 +183,3 @@ if __name__ == '__main__':
 	control_box.start()
 	time.sleep(100)
 	control_box.stop()
-
-
-
-
-
-
-
-######### You can put any code because this function is non-blocking
-# try:
-#     while True:
-#         data = env_sensor.sensor_readings
-#
-#
-#         if data['Temperature,C']
-#
-#         time.sleep(1)
-# except:
-#     control_box.stop()
-#     control_box.stop()
