@@ -68,7 +68,6 @@ class Biocontroller():
 		self.params_config_api = initiate_file(api_dir, label +'_config.json')
 		self.refresh_rate = refresh_rate
 
-
 		self.default_relay_config = {"1":{'name':'Control Socket', 'pin':relay_pin, 'state':False}}
 		self.relay_socket = None
 		self.env_sensor = None
@@ -105,6 +104,53 @@ class Biocontroller():
 
 	def check_conditions(self):
 		""" """
+		self.update_conditions()
+		temp_low, temp_high, rh_low, rh_high = self.thresholds['temp_low'], self.thresholds['temp_high'], self.thresholds['rh_low'], self.thresholds['rh_high']
+
+		sunrise = self.sun_info['sunrise']
+		sunset = self.sun_info['sunset']
+		env_sensor = self.readings[self.env_sensor.label]
+
+		temp = env_sensor['sensor_data']['Temperature,C']
+		rh = env_sensor['sensor_data']['Humidity,%RH']
+
+		now = self.timezone.localize(datetime.now())
+
+
+		if now > sunrise and now < sunset:
+
+			# temp<temp_low
+			# temp>temp_low and temp<temp_high
+			# temp>temp_high
+			#
+			# rh<rh_low
+			# rh>rh_low and rh<rh_high
+			# rh>rh_high
+
+			if temp<temp_low and rh<rh_low:
+				self.relay_socket_off()
+			elif temp<temp_low and rh>rh_low and rh<rh_high:
+				self.relay_socket_off()
+			elif temp<temp_low and rh>rh_high:
+				self.relay_socket_off()
+
+			elif temp>temp_low and temp<temp_high and rh<rh_low:
+				self.relay_socket_on()
+			elif temp>temp_low and temp<temp_high and rh>rh_high:
+				self.relay_socket_off()
+
+			elif temp>temp_high and rh<rh_low:
+				self.relay_socket_on()
+			elif temp>temp_high and rh>rh_low and rh<rh_high:
+				self.relay_socket_on()
+			elif temp>temp_high and rh>rh_high:
+				self.relay_socket_off()
+
+			else:
+				pass
+
+		else:
+			turnoff
 
 
 	def load_params(self, config_file):
@@ -121,11 +167,11 @@ class Biocontroller():
 
 		return params
 
-	def relay_socket_on(self,relay_id):
+	def relay_socket_on(self,relay_id="1"):
 		""" """
 		self.relay_socket.update_config_file(relay_id,True)
 
-	def relay_socket_off(self,relay_id):
+	def relay_socket_off(self,relay_id="1"):
 		""" """
 		self.relay_socket.update_config_file(relay_id,False)
 
@@ -142,7 +188,7 @@ class Biocontroller():
 		sun_info = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
 
 		self.sun_info = sun_info
-		self.timezone = location.timezone
+		self.timezone = pytz.timezone(location.timezone)
 
 		return self.sun_info, self.timezone
 
@@ -217,7 +263,15 @@ if __name__ == '__main__':
 	control_box= Biocontroller()
 
 	control_box.start()
-	time.sleep(100)
-	print(control_box.sun_info)
-	print(type(control_box.timezone))
-	control_box.stop()
+	time.sleep(30)
+	try:
+		while True:
+			control_box.check_conditions()
+			time.sleep(1)
+
+	except:
+		print('stopping in 100 seconds')
+		time.sleep(100)
+		print(control_box.sun_info)
+		print(type(control_box.timezone))
+		control_box.stop()
