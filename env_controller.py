@@ -10,7 +10,8 @@ import os
 import os.path
 import sys
 import csv
-import astral
+from astral import LocationInfo
+from astral.sun import sun
 import pytz
 from tzwhere import tzwhere
 
@@ -54,12 +55,14 @@ def initiate_file(dir, filename):
 		sys.exit()
 
 ######################################################################## Classes
-default_thresholds_params = {'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_high':95, 'longitude': 'latitude'}
+default_params = {'thresholds':{'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_high':95},
+                  'geolocation':{'name':'Montreal', 'region':'Quebec', 'longitude':45.5019, 'latitude':73.5674}
+                  }
 
 class Biocontroller():
     """ """
 
-    def __init__(label='Biocontroller', relay_pin=20, api_dir='./api/', refresh_rate=1):
+    def __init__(self, label='Biocontroller', params=default_params, relay_pin=20, api_dir='./api/', refresh_rate=1):
         self.label = label
         self.status = None
         self.default_relay_config = {"1":{'name':'Control Socket', 'pin':relay_pin, 'state':False}}
@@ -67,19 +70,29 @@ class Biocontroller():
         self.env_sensor = None
         self.readings_api = initiate_file(api_dir, label +'_realtime_readings.json')
 
-        self.temp_thresh_low = None
-        self.temp_thresh_high = None
-        self.rh_thresh_low = None
-        self.rh_thresh_high = None
-        self.sunset = None
-        self.sunrise = None
-
-
+        self.thresholds = params['thresholds']
+        self.geolocation = params['geolocation']
+        self.sun_info = get_sun_info()
 
         self.refresh_rate = refresh_rate
         self.thread = None
 
-    def begin():
+    def get_sun_info(self):
+        tzwhere = tzwhere.tzwhere()
+        timezone_str = tzwhere.tzNameAt(self.geolocation['longitude'], self.geolocation['latitude'])
+        location = LocarionInfo(self.geolocation['name'],
+                                self.geolocation['region'],
+                                timezone_str,
+                                self.geolocation['longitude'],
+                                self.geolocation['latitude']
+                                )
+        s = sun(location.obeserver, date = datetime.date.today(),tzinfo=location.timezone)
+
+        self.sun_info = s
+
+        return self.sun_info
+
+    def begin(self):
         self.relay_socket = GPIO_engine.BulkUpdater(
                                                 config_file = './relay_config.json',
                                                 api_dir = './api',
