@@ -264,14 +264,14 @@ if __name__ == '__main__':
 
 	control_box.start()
 	time.sleep(30)
-	try:
-		while True:
-			control_box.check_conditions()
-			time.sleep(1)
+	# try:
+	while True:
+		control_box.check_conditions()
+		time.sleep(1)
 
-	except:
-		print('stopping in 100 seconds')
-		time.sleep(100)
-		print(control_box.sun_info)
-		print(type(control_box.timezone))
-		control_box.stop()
+	# except:
+	print('stopping in 100 seconds')
+	time.sleep(100)
+	print(control_box.sun_info)
+	print(type(control_box.timezone))
+	control_box.stop()
