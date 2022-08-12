@@ -239,8 +239,6 @@ class BME680():
 			time.sleep(self.refresh_rate)
 
 		print(f'Stopping {self.label} thread processes in progress')
-		self.sensor = None
-
 		print('Thread process ended')
 
 	def stop(self):

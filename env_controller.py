@@ -161,6 +161,9 @@ class Biocontroller():
 		print(f'Stopinf {self.label} process')
 		self.relay_socket.stop()
 		self.env_sensor.stop()
+		time.sleep(10)
+		data = self.get_readings()
+		push_to_api(self.readings_api,data)
 		print(f'Stopped {self.label} process')
 
 	def stop(self):
