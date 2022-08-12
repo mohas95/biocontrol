@@ -56,7 +56,7 @@ def initiate_file(dir, filename):
 
 ######################################################################## Classes
 default_params = {'thresholds':{'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_high':95},
-                  'geolocation':{'name':'Montreal', 'region':'Quebec', 'latitude':45.5019, 'longitude':-73.5674}
+                  'geolocation':{'name':'Montreal', 'region':'Quebec', 'latitude':45.5019, 'longitude':-73.561668}
                   }
 
 class Biocontroller():
@@ -79,12 +79,12 @@ class Biocontroller():
 
     def get_sun_info(self):
         tz= tzwhere.tzwhere()
-        timezone_str = tz.tzNameAt(self.geolocation['longitude'], self.geolocation['latitude'])
+        timezone_str = tz.tzNameAt(self.geolocation['latitude'], self.geolocation['longitude'])
         location = LocationInfo(self.geolocation['name'],
                                 self.geolocation['region'],
                                 timezone_str,
-                                self.geolocation['longitude'],
-                                self.geolocation['latitude']
+                                self.geolocation['latitude'],
+                                self.geolocation['longitude']
                                 )
         s = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
 
