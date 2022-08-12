@@ -114,7 +114,7 @@ class Biocontroller():
 		temp = env_sensor['sensor_data']['Temperature,C']
 		rh = env_sensor['sensor_data']['Humidity,%RH']
 
-		now = self.timezone.localize(datetime.now())
+		now = self.timezone.localize(datetime.datetime.now())
 
 
 		if now > sunrise and now < sunset:
@@ -264,7 +264,9 @@ if __name__ == '__main__':
 
 	control_box.start()
 	time.sleep(60)
+	print('starting condition checker')
 	# try:
+
 	while True:
 		control_box.check_conditions()
 		time.sleep(1)
