@@ -61,21 +61,25 @@ default_params = {'thresholds':{'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_
 
 class Biocontroller():
 	""" """
-
-	def __init__(self, label='Biocontroller', params=default_params, relay_pin=20, api_dir='./api/', refresh_rate=1):
+	def __init__(self, label='Biocontroller', default_params=default_params, relay_pin=20, api_dir='./api/', refresh_rate=1):
 		self.label = label
 		self.status = None
+		self.readings_api = initiate_file(api_dir, label +'_realtime_readings.json')
+		self.params_config_api = initiate_file(api_dir, label +'_config.json')
+		self.refresh_rate = refresh_rate
+
+
 		self.default_relay_config = {"1":{'name':'Control Socket', 'pin':relay_pin, 'state':False}}
 		self.relay_socket = None
 		self.env_sensor = None
 		self.readings = None
+		self.default_params = default_params
 
-		self.thresholds = params['thresholds']
-		self.geolocation = params['geolocation']
-		self.sun_info, self.timezone = self.get_sun_info()
+		self.thresholds = None
+		self.geolocation = None
+		self.sun_info = None
+		self.timezone = None
 
-		self.readings_api = initiate_file(api_dir, label +'_realtime_readings.json')
-		self.refresh_rate = refresh_rate
 		self.thread = None
 
 	def set_thread(func):
@@ -85,6 +89,62 @@ class Biocontroller():
 			print(f'thread object for {self.label} set as {self.thread}')
 			return self.thread
 		return wrapper
+
+	def update_conditions(self):
+		""" """
+		params = self.load_params(self.params_config_api)
+
+		self.thresholds = params['thresholds']
+		if params['geolocation']!= self.geolocation:
+			print('geolocation has been update, getting sun information')
+			self.geolocation = params['geolocation']
+			self.get_sun_info()
+		else:
+			self.geolocation = params['geolocation']
+
+
+	def check_conditions(self):
+		""" """
+
+
+	def load_params(self, config_file):
+		""" """
+		if os.path.isfile(config_file):
+			print(f'Loading config file: {config_file}')
+			with open(config_file, "r") as f:
+				params = json.load(f)
+		else:
+			print(f'config file not found creating file with default parameters at: {config_file}')
+			with open(config_file, "w") as f:
+				params = self.default_params
+				f.write(json.dumps(params,indent=4))
+
+		return params
+
+	def relay_socket_on(self,relay_id):
+		""" """
+		self.relay_socket.update_config_file(relay_id,True)
+
+	def relay_socket_off(self,relay_id):
+		""" """
+		self.relay_socket.update_config_file(relay_id,False)
+
+	def get_sun_info(self):
+		""" """
+		tz= tzwhere.tzwhere()
+		timezone_str = tz.tzNameAt(self.geolocation['latitude'], self.geolocation['longitude'])
+		location = LocationInfo(self.geolocation['name'],
+								self.geolocation['region'],
+								timezone_str,
+								self.geolocation['latitude'],
+								self.geolocation['longitude']
+								)
+		sun_info = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
+
+		self.sun_info = sun_info
+		self.timezone = location.timezone
+
+		return self.sun_info, self.timezone
 
 	def get_readings(self):
 		""" """
@@ -104,37 +164,10 @@ class Biocontroller():
 
 		return self.readings
 
-	def check_conditions(self):
-		""" """
-	def relay_socket_on(self):
-		""" """
-		self.relay_socket.update_config_file("1",True)
-
-	def relay_socket_off(self):
-		""" """
-		self.relay_socket.update_config_file("1",False)
-
-
-	def get_sun_info(self):
-		""" """
-		tz= tzwhere.tzwhere()
-		timezone_str = tz.tzNameAt(self.geolocation['latitude'], self.geolocation['longitude'])
-		location = LocationInfo(self.geolocation['name'],
-								self.geolocation['region'],
-								timezone_str,
-								self.geolocation['latitude'],
-								self.geolocation['longitude']
-								)
-		sun_info = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
-
-		self.sun_info = sun_info
-		self.timezone = location.timezone
-
-		return self.sun_info, self.timezone
-
 	def begin(self):
 		""" """
 		print('Starting all Processes')
+		self.update_conditions()
 		self.relay_socket = GPIO_engine.BulkUpdater(
 												config_file = './relay_config.json',
 												api_dir = './api',
@@ -182,9 +215,9 @@ class Biocontroller():
 
 if __name__ == '__main__':
 	control_box= Biocontroller()
-	print(control_box.sun_info)
-	print(type(control_box.timezone))
 
 	control_box.start()
 	time.sleep(100)
+	print(control_box.sun_info)
+	print(type(control_box.timezone))
 	control_box.stop()
