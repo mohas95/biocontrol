@@ -96,14 +96,14 @@ class BME680():
 		set status to False, which in turn will end the while loop of the active thread
 	"""
 
-	def __init__(self, label='BME680' , api_dir='./api/', log_dir='./log/'):
+	def __init__(self, label='BME680' , api_dir='./api/', log_dir='./log/',refresh_rate=1):
 		self._label = label
 		self._status = False
 		self.sensor = None
 		self._sensor_readings = None
 		self._api_file = initiate_file(api_dir,label+".json")
 		self._log_file = initiate_file(log_dir,label+"-process.log")
-		self._refresh_rate = None
+		self._refresh_rate = refresh_rate
 		self._logger = None
 		self._thread = None
 
@@ -246,3 +246,9 @@ class BME680():
 	def stop(self):
 		self.status = False
 		print(f'attempting to stop thread of {self.label}')
+
+if __name__ == '__main__':
+	env_sensor = BME680()
+	env_sensor.start()
+	time.sleep(60)
+	env_sensor.stop()
