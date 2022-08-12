@@ -101,7 +101,7 @@ class BME680():
 	def __init__(self, label='BME680' , api_dir='./api/', log_dir='./log/'):
 		self._label = label
 		self._status = False
-        self.sensor = None
+		self.sensor = None
 		self._sensor_readings = None
 		self._api_file = initiate_file(api_dir,label+".json")
 		self._log_file = initiate_file(log_dir,label+"-process.log")
@@ -198,34 +198,34 @@ class BME680():
 		return wrapper
 
 	def begin(self):
-        """"""
-        sensor = DFRobot_BME680()
-        sensor.set_humidity_oversample(sensor.OS_2X) #Oversampling value: OS_NONE, OS_1X, OS_2X, OS_4X, OS_8X, OS_16X
-        sensor.set_pressure_oversample(sensor.OS_4X) #Oversampling value: OS_NONE, OS_1X, OS_2X, OS_4X, OS_8X, OS_16X
-        sensor.set_temperature_oversample(sensor.OS_8X) #Oversampling value: OS_NONE, OS_1X, OS_2X, OS_4X, OS_8X, OS_16X
-        sensor.set_filter(sensor.FILTER_SIZE_3) #increasing resolution but reducing bandwidth
+		""""""
+		sensor = DFRobot_BME680()
+		sensor.set_humidity_oversample(sensor.OS_2X) #Oversampling value: OS_NONE, OS_1X, OS_2X, OS_4X, OS_8X, OS_16X
+		sensor.set_pressure_oversample(sensor.OS_4X) #Oversampling value: OS_NONE, OS_1X, OS_2X, OS_4X, OS_8X, OS_16X
+		sensor.set_temperature_oversample(sensor.OS_8X) #Oversampling value: OS_NONE, OS_1X, OS_2X, OS_4X, OS_8X, OS_16X
+		sensor.set_filter(sensor.FILTER_SIZE_3) #increasing resolution but reducing bandwidth
 
-        sensor.set_gas_status(sensor.ENABLE_GAS_MEAS) #1 for enable and 0 for disable
-        sensor.set_gas_heater_temperature(320) #value:target temperature in degrees celsius, between 200 ~ 400
-        sensor.set_gas_heater_duration(150) #value:target duration in milliseconds, between 1 and 4032
-        sensor.select_gas_heater_profile(0) #value:current gas sensor conversion profile: 0 to 9
+		sensor.set_gas_status(sensor.ENABLE_GAS_MEAS) #1 for enable and 0 for disable
+		sensor.set_gas_heater_temperature(320) #value:target temperature in degrees celsius, between 200 ~ 400
+		sensor.set_gas_heater_duration(150) #value:target duration in milliseconds, between 1 and 4032
+		sensor.select_gas_heater_profile(0) #value:current gas sensor conversion profile: 0 to 9
 
-        self.sensor = sensor
+		self.sensor = sensor
 
 	def get_sensor_readings(self):
 
-        if self.sensor.get_sensor_data():
-            sensor_data = { 'Temperature,C':self.sensor.data.temperature,
-                            'Humidity,%RH': self.sensor.data.humidity,
-                            'Pressure,hPa': self.sensor.data.pressure,
-                            'timestamp': datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                            }
+		if self.sensor.get_sensor_data():
+			sensor_data = { 'Temperature,C':self.sensor.data.temperature,
+							'Humidity,%RH': self.sensor.data.humidity,
+							'Pressure,hPa': self.sensor.data.pressure,
+							'timestamp': datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+							}
 
-            self.sensor_readings = sensor_data
-        else:
-            self.sensor_readings = None
+			self.sensor_readings = sensor_data
+		else:
+			self.sensor_readings = None
 
-        return self.sensor_readings
+		return self.sensor_readings
 
 	@set_thread
 	@threaded
@@ -238,10 +238,10 @@ class BME680():
 		while self.status:
 			data['sensor_data'] = self.get_sensor_readings()
 			push_to_api(self.api_file, data)
-            time.sleep(self.refresh_rate)
+			time.sleep(self.refresh_rate)
 
 		print(f'Stopping {self.label} thread processes in progress')
-        self.sensor = None
+		self.sensor = None
 
 		print('Thread process ended')
 
