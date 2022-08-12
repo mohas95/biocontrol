@@ -78,8 +78,8 @@ class Biocontroller():
         self.thread = None
 
     def get_sun_info(self):
-        tzwhere = tzwhere.tzwhere()
-        timezone_str = tzwhere.tzNameAt(self.geolocation['longitude'], self.geolocation['latitude'])
+        tz= tzwhere.tzwhere()
+        timezone_str = tz.tzNameAt(self.geolocation['longitude'], self.geolocation['latitude'])
         location = LocarionInfo(self.geolocation['name'],
                                 self.geolocation['region'],
                                 timezone_str,
