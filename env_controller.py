@@ -263,7 +263,7 @@ if __name__ == '__main__':
 	control_box= Biocontroller()
 
 	control_box.start()
-	time.sleep(30)
+	time.sleep(60)
 	# try:
 	while True:
 		control_box.check_conditions()
