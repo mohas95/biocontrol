@@ -13,6 +13,7 @@
 
 ### python library
 - pip install smbus
+- pip install pip install RPI-control-center
 
 ### UI(Node-red)
 - sudo apt install build-essential git curl
