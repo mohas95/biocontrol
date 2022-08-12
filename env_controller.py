@@ -11,7 +11,8 @@ import os.path
 import sys
 import csv
 import astral
-
+import pytz
+from tzwhere import tzwhere
 
 
 
@@ -53,7 +54,7 @@ def initiate_file(dir, filename):
 		sys.exit()
 
 ######################################################################## Classes
-default_thresholds_params = {'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_high':95,}
+default_thresholds_params = {'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_high':95, 'longitude': 'latitude'}
 
 class Biocontroller():
     """ """
