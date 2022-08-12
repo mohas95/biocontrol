@@ -56,7 +56,7 @@ def initiate_file(dir, filename):
 
 ######################################################################## Classes
 default_params = {'thresholds':{'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_high':95},
-                  'geolocation':{'name':'Montreal', 'region':'Quebec', 'longitude':45.5019, 'latitude':73.5674}
+                  'geolocation':{'name':'Montreal', 'region':'Quebec', 'latitude':45.5019, 'longitude':73.5674}
                   }
 
 class Biocontroller():
