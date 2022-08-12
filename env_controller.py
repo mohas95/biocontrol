@@ -68,16 +68,17 @@ class Biocontroller():
         self.default_relay_config = {"1":{'name':'Control Socket', 'pin':relay_pin, 'state':False}}
         self.relay_socket = None
         self.env_sensor = None
-        self.readings_api = initiate_file(api_dir, label +'_realtime_readings.json')
 
         self.thresholds = params['thresholds']
         self.geolocation = params['geolocation']
-        self.sun_info = self.get_sun_info()
+        self.sun_info, self.timezone = self.get_sun_info()
 
+        self.readings_api = initiate_file(api_dir, label +'_realtime_readings.json')
         self.refresh_rate = refresh_rate
         self.thread = None
 
     def get_sun_info(self):
+        """ """
         tz= tzwhere.tzwhere()
         timezone_str = tz.tzNameAt(self.geolocation['latitude'], self.geolocation['longitude'])
         location = LocationInfo(self.geolocation['name'],
@@ -89,10 +90,12 @@ class Biocontroller():
         s = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
 
         self.sun_info = s
+        self.timezone = location.timezone
 
-        return self.sun_info
+        return self.sun_info, self.timezone
 
     def begin(self):
+        """ """
         self.relay_socket = GPIO_engine.BulkUpdater(
                                                 config_file = './relay_config.json',
                                                 api_dir = './api',
@@ -104,11 +107,18 @@ class Biocontroller():
         self.env_sensor = BME680()
         self.env_sensor.start()
 
+    # def start(self):
+    #     """ """
+    #     self.status = True
+    #
+    #     while self.status:
 
 
 if __name__ == '__main__':
     control_box= Biocontroller()
     print(control_box.sun_info)
+    print(control_box.timezone)
+
 
 
 
