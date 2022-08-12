@@ -10,7 +10,7 @@ import os
 import os.path
 import sys
 import csv
-
+import astral
 
 
 
@@ -53,7 +53,7 @@ def initiate_file(dir, filename):
 		sys.exit()
 
 ######################################################################## Classes
-default_thresholds_params = {'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_high':95}
+default_thresholds_params = {'temp_low':22, 'temp_high':24, 'rh_low':50, 'rh_high':95,}
 
 class Biocontroller():
     """ """
