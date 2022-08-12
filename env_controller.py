@@ -72,7 +72,7 @@ class Biocontroller():
 
         self.thresholds = params['thresholds']
         self.geolocation = params['geolocation']
-        self.sun_info = get_sun_info()
+        self.sun_info = self.get_sun_info()
 
         self.refresh_rate = refresh_rate
         self.thread = None

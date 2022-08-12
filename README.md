@@ -10,11 +10,14 @@
 - sudo apt install git
 - sudo apt install i2c-tools
 - sudo apt-get -y install hostapd dnsmasq
+- sudo apt-get install libgeos-dev
+
 
 ### python library
 - pip install smbus
 - pip install pip install RPI-control-center
 - pip install astral
+- pip install tzwhere
 
 ### UI(Node-red)
 - sudo apt install build-essential git curl
