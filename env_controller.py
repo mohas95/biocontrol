@@ -151,6 +151,7 @@ class Biocontroller():
     def start(self):
         """ """
         self.status = True
+        print(f'Starting {self.label} process')
         self.begin()
 
         while self.status:
@@ -158,12 +159,15 @@ class Biocontroller():
             push_to_api(self.readings_api,data)
             time.sleep(self.refresh_rate)
 
-
+        print(f'Stopinf {self.label} process')
         self.relay_socket.stop()
         self.env_sensor.stop()
+        print(f'Stopped {self.label} process')
 
     def stop(self):
+        print(f'attempting to stop {self.label} process')
         self.status = None
+
 
 
 
