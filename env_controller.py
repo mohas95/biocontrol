@@ -86,7 +86,7 @@ class Biocontroller():
                                 self.geolocation['longitude'],
                                 self.geolocation['latitude']
                                 )
-        s = sun(location.obeserver, date = datetime.date.today(),tzinfo=location.timezone)
+        s = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
 
         self.sun_info = s
 
