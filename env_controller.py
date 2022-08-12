@@ -68,6 +68,7 @@ class Biocontroller():
         self.default_relay_config = {"1":{'name':'Control Socket', 'pin':relay_pin, 'state':False}}
         self.relay_socket = None
         self.env_sensor = None
+        self.readings = None
 
         self.thresholds = params['thresholds']
         self.geolocation = params['geolocation']
@@ -76,6 +77,44 @@ class Biocontroller():
         self.readings_api = initiate_file(api_dir, label +'_realtime_readings.json')
         self.refresh_rate = refresh_rate
         self.thread = None
+
+    def set_thread(func):
+		"""Decorator Function in order to set the thread property of the object to the output of a function returning  a thread object"""
+		def wrapper(self):
+			self.thread = func(self)
+			print(f'thread object for {self.label} set as {self.thread}')
+			return self.thread
+		return wrapper
+
+    def get_readings(self):
+        """ """
+        data = {'label' : self.label +'_realtime_readings.json',
+                self.env_sensor.label : {'status':'active' if self.env_sensor.status else 'inactive',
+                                         'sensor_data': self.env_sensor.sensor_readings
+                                         },
+                'sockets' : 'status': 'active' if self.relay_socket.status else 'inactive'
+                }
+
+        for relay_id, relay in self.relay_socket.relay_dict.items():
+            data['sockets'] = { relay_id : {'name':relay.name,
+                                            'pin':relay.pin,
+                                            'state': 'ON' if relay.state else 'OFF'
+                                            }
+                                }
+        self.readings = data
+
+        return self.readings
+
+    def check_conditions(self):
+        """ """
+    def relay_socket_on(self):
+        """ """
+        self.relay_socket.update_config_file("1",True)
+
+    def relay_socket_off(self):
+        """ """
+        self.relay_socket.update_config_file("1",False)
+
 
     def get_sun_info(self):
         """ """
@@ -87,9 +126,9 @@ class Biocontroller():
                                 self.geolocation['latitude'],
                                 self.geolocation['longitude']
                                 )
-        s = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
+        sun_info = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
 
-        self.sun_info = s
+        self.sun_info = sun_info
         self.timezone = location.timezone
 
         return self.sun_info, self.timezone
@@ -107,17 +146,35 @@ class Biocontroller():
         self.env_sensor = BME680()
         self.env_sensor.start()
 
-    # def start(self):
-    #     """ """
-    #     self.status = True
-    #
-    #     while self.status:
+    @set_thread
+    @threaded
+    def start(self):
+        """ """
+        self.status = True
+        self.begin()
+
+        while self.status:
+            data = self.get_readings()
+            push_to_api(self.readings_api,data)
+            time.sleep(self.refresh_rate)
+
+
+        self.relay_socket.stop()
+        self.env_sensor.stop()
+
+    def stop(self):
+        self.status = None
+
 
 
 if __name__ == '__main__':
     control_box= Biocontroller()
     print(control_box.sun_info)
     print(type(control_box.timezone))
+
+    control_box.start()
+    time.sleep(100)
+    control_box.stop()
 
 
 
