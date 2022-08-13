@@ -150,7 +150,7 @@ class Biocontroller():
 				pass
 
 		else:
-			print(f'outside time bounds it is currently {now}, {sunset} <-> {sunrise}')
+			print(f'outside time bounds it is currently {now}, {sunrise} <-> {sunset}')
 			self.relay_socket_off()
 
 
