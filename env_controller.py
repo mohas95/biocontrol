@@ -118,37 +118,24 @@ class Biocontroller():
 
 
 		if now > sunrise and now < sunset:
-
-			# temp<temp_low
-			# temp>temp_low and temp<temp_high
-			# temp>temp_high
-			#
-			# rh<rh_low
-			# rh>rh_low and rh<rh_high
-			# rh>rh_high
-
 			if temp<temp_low and rh<rh_low:
 				self.relay_socket_off()
 			elif temp<temp_low and rh>rh_low and rh<rh_high:
 				self.relay_socket_off()
 			elif temp<temp_low and rh>rh_high:
 				self.relay_socket_off()
-
 			elif temp>temp_low and temp<temp_high and rh<rh_low:
 				self.relay_socket_on()
 			elif temp>temp_low and temp<temp_high and rh>rh_high:
 				self.relay_socket_off()
-
 			elif temp>temp_high and rh<rh_low:
 				self.relay_socket_on()
 			elif temp>temp_high and rh>rh_low and rh<rh_high:
 				self.relay_socket_on()
 			elif temp>temp_high and rh>rh_high:
 				self.relay_socket_off()
-
 			else:
 				pass
-
 		else:
 			print(f'outside time bounds it is currently {now}, {sunrise} <-> {sunset}')
 			self.relay_socket_off()
@@ -157,7 +144,7 @@ class Biocontroller():
 	def load_params(self, config_file):
 		""" """
 		if os.path.isfile(config_file):
-			print(f'Loading config file: {config_file}')
+			# print(f'Loading config file: {config_file}')
 			with open(config_file, "r") as f:
 				params = json.load(f)
 		else:
