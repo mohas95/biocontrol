@@ -98,7 +98,9 @@ class Biocontroller():
 		if params['geolocation']!= self.geolocation or params['date']!=datetime.date.today().strftime('%Y-%m-%d'):
 			print('geolocation has been updated, getting new sun information')
 			self.geolocation = params['geolocation']
+
 			self.get_sun_info()
+
 			params['date'] = datetime.date.today().strftime('%Y-%m-%d')
 			push_to_api(self.params_config_api, params)
 
@@ -106,42 +108,48 @@ class Biocontroller():
 			self.geolocation = params['geolocation']
 
 
+
 	def check_conditions(self):
 		""" """
-		self.update_conditions()
-		temp_low, temp_high, rh_low, rh_high = self.thresholds['temp_low'], self.thresholds['temp_high'], self.thresholds['rh_low'], self.thresholds['rh_high']
+		try:
+			self.update_conditions()
+			temp_low, temp_high, rh_low, rh_high = self.thresholds['temp_low'], self.thresholds['temp_high'], self.thresholds['rh_low'], self.thresholds['rh_high']
 
-		sunrise = self.sun_info['sunrise']
-		sunset = self.sun_info['sunset']
-		env_sensor = self.readings[self.env_sensor.label]
+			sunrise = self.sun_info['sunrise']
+			sunset = self.sun_info['sunset']
+			env_sensor = self.readings[self.env_sensor.label]
 
-		temp = env_sensor['sensor_data']['Temperature,C']
-		rh = env_sensor['sensor_data']['Humidity,%RH']
+			temp = env_sensor['sensor_data']['Temperature,C']
+			rh = env_sensor['sensor_data']['Humidity,%RH']
 
-		now = self.timezone.localize(datetime.datetime.now())
+			now = self.timezone.localize(datetime.datetime.now())
 
-		if now > sunrise and now < sunset:
-			if temp<temp_low and rh<rh_low:
-				self.relay_socket_off()
-			elif temp<temp_low and rh>rh_low and rh<rh_high:
-				self.relay_socket_off()
-			elif temp<temp_low and rh>rh_high:
-				self.relay_socket_off()
-			elif temp>temp_low and temp<temp_high and rh<rh_low:
-				self.relay_socket_on()
-			elif temp>temp_low and temp<temp_high and rh>rh_high:
-				self.relay_socket_off()
-			elif temp>temp_high and rh<rh_low:
-				self.relay_socket_on()
-			elif temp>temp_high and rh>rh_low and rh<rh_high:
-				self.relay_socket_on()
-			elif temp>temp_high and rh>rh_high:
-				self.relay_socket_off()
+			if now > sunrise and now < sunset:
+				if temp<temp_low and rh<rh_low:
+					self.relay_socket_off()
+				elif temp<temp_low and rh>rh_low and rh<rh_high:
+					self.relay_socket_off()
+				elif temp<temp_low and rh>rh_high:
+					self.relay_socket_off()
+				elif temp>temp_low and temp<temp_high and rh<rh_low:
+					self.relay_socket_on()
+				elif temp>temp_low and temp<temp_high and rh>rh_high:
+					self.relay_socket_off()
+				elif temp>temp_high and rh<rh_low:
+					self.relay_socket_on()
+				elif temp>temp_high and rh>rh_low and rh<rh_high:
+					self.relay_socket_on()
+				elif temp>temp_high and rh>rh_high:
+					self.relay_socket_off()
+				else:
+					pass
 			else:
-				pass
-		else:
-			# print(f'outside time bounds it is currently {now}, {sunrise} <-> {sunset}')
-			self.relay_socket_off()
+				# print(f'outside time bounds it is currently {now}, {sunrise} <-> {sunset}')
+				self.relay_socket_off()
+		except:
+			print('Error, probably an issue with the config file, deleting config file')
+			delete_file(self.params_config_api)
+			break
 
 	def load_params(self, config_file):
 		""" """
