@@ -94,10 +94,14 @@ class Biocontroller():
 		params = self.load_params(self.params_config_api)
 
 		self.thresholds = params['thresholds']
-		if params['geolocation']!= self.geolocation: #or params['date']!=:
+
+		if params['geolocation']!= self.geolocation or params['date']!=datetime.date.today().strftime('%Y-%m-%d'):
 			print('geolocation has been update, getting sun information')
 			self.geolocation = params['geolocation']
 			self.get_sun_info()
+			params['date'] = datetime.date.today().strftime('%Y-%m-%d')
+			push_to_api(self.params_config_api, params)
+
 		else:
 			self.geolocation = params['geolocation']
 
@@ -149,10 +153,14 @@ class Biocontroller():
 				params = json.load(f)
 		else:
 			print(f'config file not found creating file with default parameters at: {config_file}')
-			with open(config_file, "w") as f:
-				params = self.default_params
-				params['date'] = datetime.date.today().strftime('%Y-%m-%d')
-				f.write(json.dumps(params,indent=4))
+
+			params = self.default_params
+			params['date'] = datetime.date.today().strftime('%Y-%m-%d')
+			push_to_api(self.params_config_api, params)
+			# with open(config_file, "w") as f:
+			# 	params = self.default_params
+			# 	params['date'] = datetime.date.today().strftime('%Y-%m-%d')
+			# 	f.write(json.dumps(params,indent=4))
 
 		return params
 
