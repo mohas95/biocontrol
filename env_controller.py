@@ -96,7 +96,7 @@ class Biocontroller():
 		self.thresholds = params['thresholds']
 
 		if params['geolocation']!= self.geolocation or params['date']!=datetime.date.today().strftime('%Y-%m-%d'):
-			print('geolocation has been update, getting sun information')
+			print('geolocation has been updated, getting new sun information')
 			self.geolocation = params['geolocation']
 			self.get_sun_info()
 			params['date'] = datetime.date.today().strftime('%Y-%m-%d')
@@ -120,7 +120,6 @@ class Biocontroller():
 
 		now = self.timezone.localize(datetime.datetime.now())
 
-
 		if now > sunrise and now < sunset:
 			if temp<temp_low and rh<rh_low:
 				self.relay_socket_off()
@@ -141,14 +140,12 @@ class Biocontroller():
 			else:
 				pass
 		else:
-			print(f'outside time bounds it is currently {now}, {sunrise} <-> {sunset}')
+			# print(f'outside time bounds it is currently {now}, {sunrise} <-> {sunset}')
 			self.relay_socket_off()
-
 
 	def load_params(self, config_file):
 		""" """
 		if os.path.isfile(config_file):
-			# print(f'Loading config file: {config_file}')
 			with open(config_file, "r") as f:
 				params = json.load(f)
 		else:
@@ -157,10 +154,6 @@ class Biocontroller():
 			params = self.default_params
 			params['date'] = datetime.date.today().strftime('%Y-%m-%d')
 			push_to_api(self.params_config_api, params)
-			# with open(config_file, "w") as f:
-			# 	params = self.default_params
-			# 	params['date'] = datetime.date.today().strftime('%Y-%m-%d')
-			# 	f.write(json.dumps(params,indent=4))
 
 		return params
 
@@ -177,7 +170,6 @@ class Biocontroller():
 			self.relay_socket.update_config_file(relay_id,False)
 		else:
 			pass
-
 
 	def get_sun_info(self):
 		""" """
@@ -260,7 +252,6 @@ class Biocontroller():
 
 if __name__ == '__main__':
 	control_box= Biocontroller()
-
 	control_box.start()
 	time.sleep(60)
 	print('starting condition checker')
