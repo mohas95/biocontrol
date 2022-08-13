@@ -269,8 +269,8 @@ if __name__ == '__main__':
 			time.sleep(1)
 
 	except:
-		print('stopping in 100 seconds')
-		time.sleep(100)
+		print('stopping in 5 seconds')
+		time.sleep(5)
 		print(control_box.sun_info)
 		print(type(control_box.timezone))
 		control_box.stop()
