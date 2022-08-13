@@ -151,7 +151,7 @@ class Biocontroller():
 			print(f'config file not found creating file with default parameters at: {config_file}')
 			with open(config_file, "w") as f:
 				params = self.default_params
-				params['date'] = datetime.date.today().strftime()
+				params['date'] = datetime.date.today().strftime('%Y-%m-%d')
 				f.write(json.dumps(params,indent=4))
 
 		return params
