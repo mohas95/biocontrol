@@ -149,7 +149,6 @@ class Biocontroller():
 		except:
 			print('Error, probably an issue with the config file, deleting config file')
 			delete_file(self.params_config_api)
-			break
 
 	def load_params(self, config_file):
 		""" """
