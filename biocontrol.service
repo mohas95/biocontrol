@@ -1,0 +1,13 @@
+[Unit]
+Description=My test service
+After=multi-user.target
+
+[Service]
+WorkingDirectory=/home/pi/biocontrol
+User=pi
+Type=simple
+Restart=on-failure
+ExecStart=/usr/bin/python /home/pi/biocontrol/env_controller.py
+
+[Install]
+WantedBy=multi-user.target
