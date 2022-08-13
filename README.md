@@ -22,3 +22,10 @@
 ### UI(Node-red)
 - sudo apt install build-essential git curl
 - bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)
+- Pallets:
+  - node-red-dashboard
+-
+
+### enable the service file
+- sudo systemctl enable ~/biocontrol/biocontrol.service
+- sudo systemctl start biocontrol
