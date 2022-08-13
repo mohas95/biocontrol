@@ -150,6 +150,7 @@ class Biocontroller():
 				pass
 
 		else:
+			print(f'outside time bounds it is currently {now}, {sunset} <-> {sunrise}')
 			self.relay_socket_off()
 
 
@@ -169,11 +170,18 @@ class Biocontroller():
 
 	def relay_socket_on(self,relay_id="1"):
 		""" """
-		self.relay_socket.update_config_file(relay_id,True)
+		if self.relay_socket.relay_dict[relay_id].state:
+			pass
+		else:
+			self.relay_socket.update_config_file(relay_id,True)
 
 	def relay_socket_off(self,relay_id="1"):
 		""" """
-		self.relay_socket.update_config_file(relay_id,False)
+		if self.relay_socket.relay_dict[relay_id].state:
+			self.relay_socket.update_config_file(relay_id,False)
+		else:
+			pass
+
 
 	def get_sun_info(self):
 		""" """
@@ -265,15 +273,14 @@ if __name__ == '__main__':
 	control_box.start()
 	time.sleep(60)
 	print('starting condition checker')
-	# try:
+	try:
+		while True:
+			control_box.check_conditions()
+			time.sleep(1)
 
-	while True:
-		control_box.check_conditions()
-		time.sleep(1)
-
-	# except:
-	print('stopping in 100 seconds')
-	time.sleep(100)
-	print(control_box.sun_info)
-	print(type(control_box.timezone))
-	control_box.stop()
+	except:
+		print('stopping in 100 seconds')
+		time.sleep(100)
+		print(control_box.sun_info)
+		print(type(control_box.timezone))
+		control_box.stop()
