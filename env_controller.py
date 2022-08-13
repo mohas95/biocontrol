@@ -94,7 +94,7 @@ class Biocontroller():
 		params = self.load_params(self.params_config_api)
 
 		self.thresholds = params['thresholds']
-		if params['geolocation']!= self.geolocation:
+		if params['geolocation']!= self.geolocation: #or params['date']!=:
 			print('geolocation has been update, getting sun information')
 			self.geolocation = params['geolocation']
 			self.get_sun_info()
@@ -151,6 +151,7 @@ class Biocontroller():
 			print(f'config file not found creating file with default parameters at: {config_file}')
 			with open(config_file, "w") as f:
 				params = self.default_params
+				params['date'] = datetime.date.today().strftime()
 				f.write(json.dumps(params,indent=4))
 
 		return params
@@ -181,7 +182,6 @@ class Biocontroller():
 								self.geolocation['longitude']
 								)
 		sun_info = sun(location.observer, date = datetime.date.today(),tzinfo=location.timezone)
-
 		self.sun_info = sun_info
 		self.timezone = pytz.timezone(location.timezone)
 
@@ -195,7 +195,6 @@ class Biocontroller():
 										 },
 				'sockets' : {'status': 'active' if self.relay_socket.status else 'inactive'}
 				}
-
 		for relay_id, relay in self.relay_socket.relay_dict.items():
 			data['sockets'][relay_id] = { 'name':relay.name,
 										  'pin':relay.pin,
@@ -216,13 +215,10 @@ class Biocontroller():
 												refresh_rate = self.refresh_rate
 											  )
 		self.relay_socket.start()
-
 		self.env_sensor = BME680()
 		self.env_sensor.start()
-
 		time.sleep(15)
 		print('All processes started')
-
 
 	@set_thread
 	@threaded
