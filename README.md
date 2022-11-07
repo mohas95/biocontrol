@@ -1,7 +1,6 @@
 # biocontrol
 ## access
 - pi@biocontrol.local
-- pw: adamchuk
 - sudo raspi-config
   - Enable I2C, SPI, Serial (diable for login shell, enable serial)
 ## Installations
