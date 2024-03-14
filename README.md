@@ -11,6 +11,8 @@
 - sudo apt install i2c-tools
 - sudo apt-get -y install hostapd dnsmasq
 - sudo apt-get install libgeos-dev
+- sudo apt-get install -y mosquitto mosquitto-clients
+
 
 
 ### python library
@@ -36,3 +38,16 @@
 
 ## Autohotspot
 - This aspect of the system was enabled by the work done by [raspberryconnect.com](https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/157-raspberry-pi-auto-wifi-hotspot-switch-internet)
+
+
+
+## MQTT for node-red api communication
+
+- [mosquitto MQTT Brocker](https://mosquitto.org/)
+```
+sudo apt-get install -y mosquitto mosquitto-clients
+```
+- sudo systemctl enable mosquitto.service
+- default port: 1883
+- config file: /etc/mosquitto/mosquitto.conf
+- python library: pip install paho-mqtt
