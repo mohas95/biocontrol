@@ -1,0 +1,943 @@
+[
+    {
+        "id": "6ec95de2e0350d99",
+        "type": "tab",
+        "label": "WIFI Management",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1a2fc62c1335c250",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "sudo iwlist wlan0 scan | grep ESSID | sed 's/ESSID://g;s/\"//g;s/^ *//;s/ *$//'",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "scan",
+        "x": 430,
+        "y": 80,
+        "wires": [
+            [
+                "5b3491dd7fa7e0f9"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "5b3491dd7fa7e0f9",
+        "type": "function",
+        "z": "6ec95de2e0350d99",
+        "name": "parseOptions",
+        "func": "var ssids = msg.payload.split('\\n').filter(s => !!s)\n\nssids = [...new Set(ssids)];\n\nmsg.options = ssids\nmsg.payload = null\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 660,
+        "y": 67,
+        "wires": [
+            [
+                "25b6f87af999c359"
+            ]
+        ]
+    },
+    {
+        "id": "23a8c5aba5ac8cca",
+        "type": "inject",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 90,
+        "y": 80,
+        "wires": [
+            [
+                "1a2fc62c1335c250",
+                "eb7f6bf25a93a989",
+                "c82a99b2d380754c",
+                "8a920102ebd9fdad"
+            ]
+        ]
+    },
+    {
+        "id": "25b6f87af999c359",
+        "type": "ui_dropdown",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "label": "Wifi",
+        "tooltip": "",
+        "place": "Select a WIFI",
+        "group": "102d980614be1665",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "multiple": false,
+        "options": [],
+        "payload": "",
+        "topic": "",
+        "topicType": "str",
+        "className": "",
+        "x": 830,
+        "y": 67,
+        "wires": [
+            [
+                "90353477698c2d8f"
+            ]
+        ]
+    },
+    {
+        "id": "ffb430dabc54847f",
+        "type": "ui_button",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "group": "102d980614be1665",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Scan",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "topic": "",
+        "topicType": "str",
+        "x": 230,
+        "y": 181,
+        "wires": [
+            [
+                "1a2fc62c1335c250"
+            ]
+        ]
+    },
+    {
+        "id": "1d8e488a02c17767",
+        "type": "ui_ui_control",
+        "z": "6ec95de2e0350d99",
+        "name": "onTab",
+        "events": "all",
+        "x": 70,
+        "y": 40,
+        "wires": [
+            [
+                "2583b1492e7e7673",
+                "02404491789156b5"
+            ]
+        ]
+    },
+    {
+        "id": "2583b1492e7e7673",
+        "type": "switch",
+        "z": "6ec95de2e0350d99",
+        "name": "ifWifi",
+        "property": "name",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Wifi",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 271,
+        "y": 80,
+        "wires": [
+            [
+                "1a2fc62c1335c250",
+                "eb7f6bf25a93a989",
+                "c82a99b2d380754c"
+            ]
+        ]
+    },
+    {
+        "id": "eb7f6bf25a93a989",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "ifconfig wlan0",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "getInfo",
+        "x": 430,
+        "y": 181,
+        "wires": [
+            [
+                "af8a62f3fa56a1a8"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "af8a62f3fa56a1a8",
+        "type": "function",
+        "z": "6ec95de2e0350d99",
+        "name": "parseInfo",
+        "func": "var ip = msg.payload.match(/inet ([0-9\\.]+)/)[1]\nvar mask = msg.payload.match(/netmask ([0-9\\.]+)/)[1]\nvar broadcast = msg.payload.match(/broadcast ([0-9\\.]+)/)[1]\n\n\nnode.send({topic: 'ip', payload: ip})\nnode.send({topic: 'mask', payload: mask})\nnode.send({topic: 'broadcast', payload: broadcast})",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 640,
+        "y": 168,
+        "wires": [
+            [
+                "d74685eae448db96"
+            ]
+        ]
+    },
+    {
+        "id": "d74685eae448db96",
+        "type": "switch",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ip",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "mask",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "broadcast",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 810,
+        "y": 181,
+        "wires": [
+            [
+                "680a70c3af127524"
+            ],
+            [
+                "3a9039415f168948"
+            ],
+            [
+                "038e13d093426b97"
+            ]
+        ]
+    },
+    {
+        "id": "680a70c3af127524",
+        "type": "ui_text",
+        "z": "6ec95de2e0350d99",
+        "group": "cf2db1f0d54fcfea",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "IP",
+        "format": "{{msg.payload || '---'}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 990,
+        "y": 141,
+        "wires": []
+    },
+    {
+        "id": "3a9039415f168948",
+        "type": "ui_text",
+        "z": "6ec95de2e0350d99",
+        "group": "cf2db1f0d54fcfea",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Netmask",
+        "format": "{{msg.payload || '---'}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1000,
+        "y": 181,
+        "wires": []
+    },
+    {
+        "id": "038e13d093426b97",
+        "type": "ui_text",
+        "z": "6ec95de2e0350d99",
+        "group": "cf2db1f0d54fcfea",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Broadcast",
+        "format": "{{msg.payload || '---'}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1000,
+        "y": 221,
+        "wires": []
+    },
+    {
+        "id": "5dd0c9943ded849d",
+        "type": "ui_form",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "label": "Update Network",
+        "group": "102d980614be1665",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "SSID",
+                "value": "ssid",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "password",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "ssid": "",
+            "password": ""
+        },
+        "payload": "",
+        "submit": "UPDATE",
+        "cancel": "RESET",
+        "topic": "",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 1140,
+        "y": 67,
+        "wires": [
+            [
+                "69c16d523ae4c7e5"
+            ]
+        ]
+    },
+    {
+        "id": "90353477698c2d8f",
+        "type": "function",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "func": "\nmsg.payload = {ssid: msg.payload}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 970,
+        "y": 67,
+        "wires": [
+            [
+                "5dd0c9943ded849d"
+            ]
+        ]
+    },
+    {
+        "id": "69c16d523ae4c7e5",
+        "type": "function",
+        "z": "6ec95de2e0350d99",
+        "name": "getPassphrase",
+        "func": "var data = msg.payload\n\nvar command = `wpa_passphrase \"${data.ssid}\" \"${data.password}\" | sed '/#psk=\".*\"/d'`\n \nmsg.payload = command\n\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1320,
+        "y": 67,
+        "wires": [
+            [
+                "fd549633b914e846"
+            ]
+        ]
+    },
+    {
+        "id": "fd549633b914e846",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 1481,
+        "y": 67,
+        "wires": [
+            [
+                "2e5799c77f19ba29"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "2e5799c77f19ba29",
+        "type": "function",
+        "z": "6ec95de2e0350d99",
+        "name": "updateWpasupplicant",
+        "func": "var template = `sudo tee /etc/wpa_supplicant/wpa_supplicant.conf <<EOF\nctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=CA\n\n${msg.payload}\nEOF\\n\n`\n\nmsg.payload = template\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1680,
+        "y": 60,
+        "wires": [
+            [
+                "be40ea66a7b61d1c"
+            ]
+        ]
+    },
+    {
+        "id": "be40ea66a7b61d1c",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "updateConf",
+        "x": 1270,
+        "y": 180,
+        "wires": [
+            [
+                "e65a3fe2763b679d",
+                "a6db4d4fd53a63c2"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "f9f341965608e62a",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "sudo reboot",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Reboot",
+        "x": 1640,
+        "y": 180,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "e65a3fe2763b679d",
+        "type": "function",
+        "z": "6ec95de2e0350d99",
+        "name": "showMessage",
+        "func": "\nmsg.payload = \"Rebooting System, please connect to the selected network\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1440,
+        "y": 280,
+        "wires": [
+            [
+                "88abb19f15fa2886"
+            ]
+        ]
+    },
+    {
+        "id": "88abb19f15fa2886",
+        "type": "ui_toast",
+        "z": "6ec95de2e0350d99",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "topic": "",
+        "name": "",
+        "x": 1690,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "c82a99b2d380754c",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "iwgetid",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "getCurrentSSID",
+        "x": 460,
+        "y": 260,
+        "wires": [
+            [
+                "edf7d15f712112d1"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "885d267e76b55959",
+        "type": "ui_text",
+        "z": "6ec95de2e0350d99",
+        "group": "cf2db1f0d54fcfea",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "SSID",
+        "format": "{{msg.payload || 'Hotspot Mode'}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 810,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "edf7d15f712112d1",
+        "type": "function",
+        "z": "6ec95de2e0350d99",
+        "name": "parseInfo",
+        "func": "var ssid = msg.payload.match(/ESSID:\"([^\"]+)\"/)[1]\n\n\nnode.send({topic: 'ssid', payload: ssid})\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 640,
+        "y": 247,
+        "wires": [
+            [
+                "885d267e76b55959"
+            ]
+        ]
+    },
+    {
+        "id": "a6db4d4fd53a63c2",
+        "type": "delay",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1460,
+        "y": 180,
+        "wires": [
+            [
+                "f9f341965608e62a"
+            ]
+        ]
+    },
+    {
+        "id": "77462605cfe50edf",
+        "type": "ui_button",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "group": "cf2db1f0d54fcfea",
+        "order": 10,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Hotspot Mode",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "\"\"",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1480,
+        "y": 20,
+        "wires": [
+            [
+                "2e5799c77f19ba29"
+            ]
+        ]
+    },
+    {
+        "id": "89170b41ed4faf65",
+        "type": "ui_text",
+        "z": "6ec95de2e0350d99",
+        "group": "cf2db1f0d54fcfea",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "Connection Label",
+        "label": "",
+        "format": "Connected to:",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 450,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "480691a398c6b573",
+        "type": "ui_form",
+        "z": "6ec95de2e0350d99",
+        "name": "Configure AP",
+        "label": "",
+        "group": "cf2db1f0d54fcfea",
+        "order": 9,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Configure AP SSID",
+                "value": "ap_ssid",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Configure AP password",
+                "value": "ap_psk",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "ap_ssid": "",
+            "ap_psk": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "reset",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 90,
+        "y": 440,
+        "wires": [
+            [
+                "a3150196496c0df9",
+                "73753dc051730f02"
+            ]
+        ]
+    },
+    {
+        "id": "a3150196496c0df9",
+        "type": "function",
+        "z": "6ec95de2e0350d99",
+        "name": "updateHostAPD",
+        "func": "var template = `sudo tee /etc/hostapd/hostapd.conf <<EOF\n\n# update with relevant country\ncountry_code=CA\ninterface=wlan0\n\n## un-comment below line if setting up extended network (options 3)\n# bridge=br0\n\n## comment out below line if setting extended network (options 3)\ndriver=nl80211\n\nssid=${msg.payload.ap_ssid}\nhw_mode=g\nchannel=6\nwmm_enabled=0\nmacaddr_acl=0\nauth_algs=1\nignore_broadcast_ssid=0\nwpa=2\nwpa_passphrase=${msg.payload.ap_psk}\nwpa_key_mgmt=WPA-PSK\nwpa_pairwise=TKIP\nrsn_pairwise=CCMP\n\n\nEOF\\n\n`\n\nmsg.payload = template\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 440,
+        "wires": [
+            [
+                "9cc403e4a387750a"
+            ]
+        ]
+    },
+    {
+        "id": "9cc403e4a387750a",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "UpdateConf",
+        "x": 490,
+        "y": 440,
+        "wires": [
+            [
+                "e5c2c9852b5dd108"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "e5c2c9852b5dd108",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "sudo systemctl restart hostapd",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "reconfigure",
+        "x": 690,
+        "y": 420,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "73753dc051730f02",
+        "type": "change",
+        "z": "6ec95de2e0350d99",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Attempting to reconfigure network access point, please wait a few seconds and refresh page",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 560,
+        "wires": [
+            [
+                "2ca61548bc28022b"
+            ]
+        ]
+    },
+    {
+        "id": "2ca61548bc28022b",
+        "type": "ui_toast",
+        "z": "6ec95de2e0350d99",
+        "position": "dialog",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 530,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "72339622e8b22c8c",
+        "type": "ui_text",
+        "z": "6ec95de2e0350d99",
+        "group": "cf2db1f0d54fcfea",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "SSID AP",
+        "label": "Hotspot SSID",
+        "format": "{{msg.payload || '---'}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 560,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "8a920102ebd9fdad",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "sudo cat /etc/hostapd/hostapd.conf | grep '^ssid=' | sed 's/ssid=//g' | xargs",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "getCurrentSSID AP",
+        "x": 270,
+        "y": 700,
+        "wires": [
+            [
+                "72339622e8b22c8c"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "02404491789156b5",
+        "type": "exec",
+        "z": "6ec95de2e0350d99",
+        "command": "sudo cat /etc/hostapd/hostapd.conf |grep wpa_passphrase= | sed 's/wpa_passphrase=//g' | xargs",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "getPSK AP",
+        "x": 250,
+        "y": 800,
+        "wires": [
+            [
+                "6f55a5577591a923"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "6f55a5577591a923",
+        "type": "ui_text",
+        "z": "6ec95de2e0350d99",
+        "group": "cf2db1f0d54fcfea",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "name": "PSK AP",
+        "label": "PSK",
+        "format": "{{msg.payload || '---'}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 500,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "a5a6313ad687df1b",
+        "type": "ui_text",
+        "z": "6ec95de2e0350d99",
+        "group": "cf2db1f0d54fcfea",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "Hotspot Settings:",
+        "label": "",
+        "format": "Hotspot Settings:",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 950,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "102d980614be1665",
+        "type": "ui_group",
+        "name": "Configure Network",
+        "tab": "907bbe60.b555f",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cf2db1f0d54fcfea",
+        "type": "ui_group",
+        "name": "Access Point",
+        "tab": "907bbe60.b555f",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "907bbe60.b555f",
+        "type": "ui_tab",
+        "name": "Wifi",
+        "icon": "wifi",
+        "disabled": false,
+        "hidden": false
+    }
+]

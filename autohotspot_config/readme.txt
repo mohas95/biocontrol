@@ -9,3 +9,5 @@ add line > /etc/dhcpcd.conf
 sudo systemctl enable autohotspot.service
 
 /usr/bin/autohotspotN
+
+sudo chmod +x /usr/bin/autohotspotN
