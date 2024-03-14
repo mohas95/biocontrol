@@ -4,6 +4,6 @@ After=multi-user.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/home/pi/biocontrol/autohotspot
+ExecStart=/usr/bin/autohotspotN
 [Install]
 WantedBy=multi-user.target

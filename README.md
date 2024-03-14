@@ -30,3 +30,6 @@
 ### enable the service file
 - sudo systemctl enable ~/biocontrol/biocontrol.service
 - sudo systemctl start biocontrol
+
+## Autohotspot
+- This aspect of the system was enabled by the work done by [raspberryconnect.com](https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/157-raspberry-pi-auto-wifi-hotspot-switch-internet)
