@@ -24,6 +24,8 @@
 - Pallets:
   - node-red-dashboard
   - node-red-contrib-ui-led
+- default username: admin
+- default password: adamchuk
 
 ### enable the service file
 - sudo systemctl enable ~/biocontrol/biocontrol.service
