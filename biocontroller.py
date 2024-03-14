@@ -2,8 +2,6 @@ import time
 from rpi_control_center import controls
 from rpi_sensor_monitors import monitors
 
-
-
 if __name__ == '__main__':
     relay_config = {
             "relay1":{'pin':26, 'state':False, 'config':'no'},
@@ -17,15 +15,20 @@ if __name__ == '__main__':
                                 log_dir='./log/',
                                 refresh_rate=1)
 
-    co2_sensor = monitors.K30_CO2(serial_device = "/dev/ttyS0", baudrate=9600, label='k30_CO2', api_dir='./api/', log_dir='./log/', refresh_rate=1)
-    temp_sensor = monitors.BME680()
+    co2_sensor = monitors.K30_CO2( serial_device = "/dev/ttyS0",
+                                   baudrate=9600, label='k30_CO2',
+                                   api_dir='./api/',
+                                   log_dir='./log/',
+                                   refresh_rate=1)
+
+    temp_sensor = monitors.BME680( label='BME680',
+                                   api_dir='./api/',
+                                   log_dir='./log/',
+                                   refresh_rate=1)
+    
     co2_sensor.start()
     temp_sensor.start()          
-
     relay_group1.start()
-
-
-
 
     ######### You can put any code because this function is non-blocking
     try:
