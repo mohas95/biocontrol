@@ -26,6 +26,8 @@
   - node-red-contrib-ui-led
 - default username: admin
 - default password: adamchuk
+- node-red node console   :1880/admin
+- dashboard  :1880/
 
 ### enable the service file
 - sudo systemctl enable ~/biocontrol/biocontrol.service
