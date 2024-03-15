@@ -47,8 +47,7 @@ def on_disconnect(client, userdata, flags, rc, properties):
     print("Disconnected with result code " + str(rc))
 
 def on_publish(client, userdata, mid, rc, properties):
-    # print("Message Published")
-    pass
+    print("Message Published")
 
 def on_message(client, userdata, message):
     global relay_group, co2_sensor, temp_sensor
@@ -133,13 +132,13 @@ if __name__ == '__main__':
     client.loop_start()  # Start the loop in the background
 
     #threads
-    t1 = threading.Thread(target=publish_sensor_to, args = (MQTT_CO2_TOPIC, co2_sensor, client, 1))
-    t2 = threading.Thread(target=publish_sensor_to, args = (MQTT_TEMP_TOPIC, temp_sensor, client, 1))
-    t3 = threading.Thread(target=publish_control_to, args = (MQTT_RELAY_TOPIC, relay_group, client, 1))
+    # t1 = threading.Thread(target=publish_sensor_to, args = (MQTT_CO2_TOPIC, co2_sensor, client, 1))
+    # t2 = threading.Thread(target=publish_sensor_to, args = (MQTT_TEMP_TOPIC, temp_sensor, client, 1))
+    # t3 = threading.Thread(target=publish_control_to, args = (MQTT_RELAY_TOPIC, relay_group, client, 1))
 
-    t1.start()
-    t2.start()
-    t3.start()
+    # t1.start()
+    # t2.start()
+    # t3.start()
 
 
     try:
@@ -155,9 +154,9 @@ if __name__ == '__main__':
         temp_sensor.stop()
         relay_group.stop()
 
-        t1.join()
-        t2.join()
-        t3.join()
+        # t1.join()
+        # t2.join()
+        # t3.join()
 
 
         client.loop_stop()  # Stop the loop
