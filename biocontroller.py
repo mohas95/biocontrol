@@ -1,4 +1,5 @@
 import time
+import signal
 from rpi_control_center import controls
 from rpi_sensor_monitors import monitors
 import paho.mqtt.client as mqtt
@@ -14,6 +15,7 @@ MQTT_TEMP_TOPIC = "monitors/TEMP"
 MQTT_RELAY_TOPIC = "monitors/RELAY"
 
 MQTT_SUBSCRIPTION_TOPICS= ['controls/RELAY']
+CLIENT_ID = "moha7108"
 
 
 # global objects
@@ -41,11 +43,12 @@ temp_sensor = monitors.BME680( label='BME680',
                                 refresh_rate=1)
 
 # Callbacks
-def on_disconnect(client, userdata, rc):
+def on_disconnect(client, userdata, flags, rc, properties):
     print("Disconnected with result code " + str(rc))
 
-def on_publish(client, userdata, mid):
-    print("Message Published")
+def on_publish(client, userdata, mid, rc, properties):
+    # print("Message Published")
+    pass
 
 def on_message(client, userdata, message):
     global relay_group, co2_sensor, temp_sensor
@@ -55,14 +58,21 @@ def on_message(client, userdata, message):
     print(f"Received message '{message.payload}' on topic '{message.topic}'")
 
     if message.topic == 'controls/RELAY':
-        print("got message")
+
+        if message.payload == 'on':
+            print("setting relay on")
+            relay_group.set_relay_state('valve',True)
+
+        elif message.payload == 'off':
+            print("setting relay off")
+            relay_group.set_relay_state('valve', False)
         # relay_group.change_duty_cycle(30 if message.payload=="on" else 0)
         # print(f'{water_pump.label} dutycycle set to {message.payload}')
 
     else:
         print(f'invalid topic {message.topic}')
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties):
     global MQTT_SUBSCRIPTION_TOPICS
     print(f"Connected with result code {rc}")
     
@@ -106,9 +116,11 @@ if __name__ == '__main__':
     co2_sensor.start()
     temp_sensor.start()          
     relay_group.start()
+
+    time.sleep(10)
     
     # Create MQTT client
-    client = mqtt.Client(CLIENT_ID)
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
     # Assign callbacks
     client.on_connect = on_connect
